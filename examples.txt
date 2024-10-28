@@ -1,0 +1,4 @@
+Game can_order Mine_Type explode 
+Player can_order SpaceShip_Type StartMove_Command, StopMove_Command -- правила такого типа задают права игре или пользователю отдавать определенные команды определенному типу (корабль, мина и т.д.)
+StartMove_Command includes Move_Command, BurnFuel_Command, Collision_Command -- задает состав определенной команды
+spawn Mine_Type every 10 seconds --задает спаун объекта определенного типа каждые n секунд
