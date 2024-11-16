@@ -6,22 +6,16 @@ class ElevatorSystem:
         self.history = []
         self.elevators = [Elevator(num_floors, start_floor, i, self.history) for i, start_floor in enumerate(elevator_info)]
 
-    def request(self, call_floor, target_floor):
-        free_elevator = min(self.elevators, key=lambda elevator: abs(call_floor-elevator.current_floor))
-        self.history.append(f"{free_elevator.id + 1} лифт обслуживает вызов '{call_floor} - {target_floor}'.")
-        free_elevator.process_floor_request(call_floor)
-        free_elevator.close_doors()
-        free_elevator.process_floor_request(target_floor)
-        free_elevator.close_doors()
-        
-
     def run(self, requests):
         for elevator in self.elevators:
             elevator.reset()
 
-        for request in requests:
-            call_floor, target_floor = request
-            self.request(call_floor, target_floor)
+        up_requests = list(filter(lambda x: x[0] < x[1], requests))
+        down_requests = list(filter(lambda x: x[0] > x[1], requests))
+        elevator_up = min(self.elevators, key=lambda elevator: elevator.current_floor)
+        elevator_down = max(self.elevators, key=lambda elevator: elevator.current_floor)
+        elevator_up.process_request(up_requests)
+        elevator_down.process_request(down_requests)
 
     def get_history(self):
         for step in self.history:
