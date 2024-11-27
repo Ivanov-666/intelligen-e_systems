@@ -75,18 +75,17 @@ class Elevator:
                 }
             }
 
-    def process_request(self, requests):
-        for request in requests:
-            self.request = request
-            while len(self.request) != 0:
-                requested_floor = self.request[0]
-                try:
-                    state_transition = self.transition_map[self.current_floor][self.state].get(self.get_transition_state(requested_floor))
-                    state_transition(self)()
-                    state_doors = self.transition_map[self.current_floor][self.state].get(self.get_door_state(requested_floor))
-                    state_doors(self)()
-                except: 
-                    raise ValueError("Некорректный номер этажа")
+    def process_request(self, requested_floor):
+        while self.current_floor != requested_floor:
+            try:
+                print(self.current_floor)
+                print(self.state)
+                state_transition = self.transition_map[self.current_floor][self.state].get(self.get_transition_state(requested_floor))
+                state_transition(self)()
+                state_doors = self.transition_map[self.current_floor][self.state].get(self.get_door_state(requested_floor))
+                state_doors(self)()
+            except: 
+                raise ValueError("Некорректный номер этажа")
 
     def get_transition_state(self, requested_floor):
         return "standing"*(self.current_floor==requested_floor) + "moving_up"*(self.current_floor<requested_floor) + "moving_down"*(self.current_floor>requested_floor)
