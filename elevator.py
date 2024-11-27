@@ -87,7 +87,6 @@ class Elevator:
                     state_doors(self)()
                 except: 
                     raise ValueError("Некорректный номер этажа")
-        print('END')
 
     def get_transition_state(self, requested_floor):
         return "standing"*(self.current_floor==requested_floor) + "moving_up"*(self.current_floor<requested_floor) + "moving_down"*(self.current_floor>requested_floor)
