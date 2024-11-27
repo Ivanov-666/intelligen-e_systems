@@ -80,7 +80,6 @@ class Elevator:
             self.request = request
             while len(self.request) != 0:
                 requested_floor = self.request[0]
-                print(self.request)
                 try:
                     state_transition = self.transition_map[self.current_floor][self.state].get(self.get_transition_state(requested_floor))
                     state_transition(self)()
