@@ -78,8 +78,6 @@ class Elevator:
     def process_request(self, requested_floor):
         while self.current_floor != requested_floor:
             try:
-                print(self.current_floor)
-                print(self.state)
                 state_transition = self.transition_map[self.current_floor][self.state].get(self.get_transition_state(requested_floor))
                 state_transition(self)()
                 state_doors = self.transition_map[self.current_floor][self.state].get(self.get_door_state(requested_floor))
