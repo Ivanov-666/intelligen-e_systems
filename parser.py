@@ -36,3 +36,4 @@ class LLParser:
                     raise SyntaxError(f"Unexpected symbol '{current_input}' on stack '{stack_top}'")
 
         return all(map(lambda x: x == "$", self.input_stream))
+        
