@@ -14,3 +14,4 @@ try:
     print("Строка успешно разобрана:", result)
 except SyntaxError as e:
     print("Ошибка разбора:", e)
+    
