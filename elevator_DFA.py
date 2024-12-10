@@ -96,4 +96,4 @@ class Elevator_DFA:
         pass
 
     def reset(self):
-        self.state = "standing"
+        self.elevator.state = "standing"
