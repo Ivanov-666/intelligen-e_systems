@@ -27,9 +27,6 @@ class LLParser:
             try:
                 row = self.parsing_table[self.parsing_table["State"] == start_state_id]
                 start_state_id, is_final = self.row_func[tuple(row[['Accept', 'Return', 'Error', 'Stack']].iloc[0])](row, self.input_stream[0])
-                print(self.input_stream)
-                print(self.stack)
-                print(is_final)
             except:
                 return False
         return True
