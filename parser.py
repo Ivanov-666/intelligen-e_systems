@@ -1,10 +1,5 @@
 class LLParser:
     def __init__(self, parsing_table):
-        """
-        Инициализация LL-парсера.
-
-        :param parsing_table: Таблица переходов (dict[Nonterminal][Terminal] -> Rule)
-        """
         self.parsing_table = parsing_table
         self.stack = ["eof"]
         self.input_stream = []
