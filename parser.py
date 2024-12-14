@@ -6,34 +6,75 @@ class LLParser:
         :param parsing_table: Таблица переходов (dict[Nonterminal][Terminal] -> Rule)
         """
         self.parsing_table = parsing_table
-        self.stack = []
+        self.stack = ["eof"]
         self.input_stream = []
 
+        self.row_func = {
+            (0, 0, 0, 0): self.ZeroState,
+            (0, 0, 1, 0): self.ErrorState,
+            (0, 0, 1, 1): self.ErrorStackState,
+            (0, 1, 1, 0): self.ReturnErrorState,
+            (1, 0, 1, 0): self.AcceptErrorState,
+            (1, 1, 1, 0): self.AcceptReturnErrorState,
+        }
+
     def parse(self, input_string):
-        """
-        Выполняет парсинг входной строки.
+        start_state_id = 100
+        is_final=False
+        self.input_stream = input_string + ["eof"]
 
-        :param input_string: Входная строка для разбора.
-        :return: True, если строка успешно разобрана, иначе ошибка.
-        """
-        self.stack = ["$", "E"]
-        self.input_stream = input_string + ["$"]
-
-        while self.stack:
-            stack_top = self.stack.pop()
-            current_input = self.input_stream[0]
-
+        while not (len(self.stack) == 0 and self.input_stream == ['eof']):
             try:
-                rule = self.parsing_table[stack_top][current_input]
-                _, production = rule.split("->")
-                production = production.strip()
-                self.stack.extend(reversed(production.split()))
-                self.stack = list(filter(lambda x: x != "''", self.stack))
-            except KeyError:
-                try:
-                    self.input_stream.remove(stack_top * (stack_top == current_input))
-                except ValueError:
-                    raise SyntaxError(f"Unexpected symbol '{current_input}' on stack '{stack_top}'")
+                row = self.parsing_table[self.parsing_table["State"] == start_state_id]
+                start_state_id, is_final = self.row_func[tuple(row[['Accept', 'Return', 'Error', 'Stack']].iloc[0])](row, self.input_stream[0])
+                print(self.input_stream)
+                print(self.stack)
+                print(is_final)
+            except:
+                return False
+        return True
 
-        return all(map(lambda x: x == "$", self.input_stream))
+    def ZeroState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            return row['NextState'].iloc[0], False
+        except:
+            raise SyntaxError()
+    
+    def ErrorState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            return row['NextState'].iloc[0], False
+        except:
+            raise SyntaxError()
+    
+    def ErrorStackState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            self.stack.append(row['State'].iloc[0]+1)
+            return row['NextState'].iloc[0], False
+        except:
+            raise SyntaxError()
+    
+    def ReturnErrorState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            return self.stack.pop(), True
+        except:
+            raise SyntaxError()
         
+    def AcceptErrorState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            self.input_stream = self.input_stream[1:]
+            return self.stack.pop(), False
+        except:
+            raise SyntaxError()
+
+    def AcceptReturnErrorState(self, row, current_token):
+        try:
+            assert current_token in row['M'].iloc[0]
+            self.input_stream = self.input_stream[1:]
+            return row['NextState'].iloc[0], True
+        except:
+            raise SyntaxError()
